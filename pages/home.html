@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主页 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FFFFFF;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #FFFFFF;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .tab-bar {
+            height: 60px;
+            background-color: white;
+            border-top: 1px solid #E5E5EA;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8E8E93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #4F46E5;
+        }
+        .tab-item .emoji-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .continue-game {
+            background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
+            border-radius: 16px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+        .play-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .game-modes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .game-mode-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #F3F4F6;
+            transition: transform 0.2s;
+        }
+        .game-mode-card:active {
+            transform: scale(0.98);
+        }
+        .emoji-icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            font-size: 28px;
+        }
+        .emoji-icon-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+        }
+        .classic-icon {
+            background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+        .time-icon {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+        }
+        .rank-icon {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+        }
+        .daily-icon {
+            background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%);
+            box-shadow: 0 4px 10px rgba(236, 72, 153, 0.2);
+        }
+        .progress-container {
+            background-color: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #F3F4F6;
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: #E5E5EA;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4F46E5, #6366F1);
+            border-radius: 3px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD3A5 0%, #FD6585 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 8px rgba(253, 101, 133, 0.3);
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #111827;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #4F46E5, #6366F1);
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+        .icon-pulse {
+            animation: iconPulse 2s infinite;
+        }
+        @keyframes iconPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 在body开始处添加 -->
+    <div id="debug-info" style="position: fixed; top: 50px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; z-index: 9999; font-size: 12px; max-width: 300px; display: none;">
+        调试信息将显示在这里
+    </div>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 主页内容 -->
+    <div class="p-5 pb-20 overflow-auto h-full">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-xl font-bold">你好，玩家！</h1>
+                <p class="text-gray-500 text-sm">今天来挑战一下成语知识吧</p>
+            </div>
+            <div class="avatar">
+                😊
+            </div>
+        </div>
+
+        <!-- 继续游戏卡片 -->
+        <div class="continue-game mb-6">
+            <div>
+                <h2 class="font-bold text-lg">继续游戏</h2>
+                <p class="text-sm text-white text-opacity-80">第 24 关 - 中级难度</p>
+            </div>
+            <div class="play-button">
+                <span class="icon-pulse">▶️</span>
+            </div>
+        </div>
+
+        <!-- 游戏模式 -->
+        <div class="section-title">游戏模式</div>
+        <div class="game-modes-grid mb-6">
+            <div class="game-mode-card">
+                <div class="emoji-icon-container classic-icon">
+                    🧩
+                </div>
+                <div class="font-medium text-center text-sm">经典模式</div>
+                <div class="text-xs text-gray-500 text-center mt-1">按照关卡逐步解锁</div>
+            </div>
+            
+            <div class="game-mode-card">
+                <div class="emoji-icon-container time-icon">
+                    ⏱️
+                </div>
+                <div class="font-medium text-center text-sm">限时挑战</div>
+                <div class="text-xs text-gray-500 text-center mt-1">争分夺秒解题闯关</div>
+            </div>
+            
+            <div class="game-mode-card">
+                <div class="emoji-icon-container rank-icon">
+                    🏆
+                </div>
+                <div class="font-medium text-center text-sm">排行榜</div>
+                <div class="text-xs text-gray-500 text-center mt-1">与好友一较高下</div>
+            </div>
+            
+            <div class="game-mode-card">
+                <div class="emoji-icon-container daily-icon">
+                    📅
+                </div>
+                <div class="font-medium text-center text-sm">每日挑战</div>
+                <div class="text-xs text-gray-500 text-center mt-1">每天一道成语题目</div>
+            </div>
+        </div>
+
+        <!-- 我的成就 -->
+        <div class="section-title">我的成就</div>
+        <div class="progress-container">
+            <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500 flex items-center">
+                    <span class="mr-2">🏅</span>
+                    已完成关卡
+                </div>
+                <div class="text-sm font-medium">23/100</div>
+            </div>
+            <div class="progress-bar mt-2">
+                <div class="progress-fill" style="width: 23%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部标签栏 -->
+    <div class="tab-bar">
+        <div class="tab-item active">
+            <span class="emoji-icon">🏠</span>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <span class="emoji-icon">🎮</span>
+            <span>关卡</span>
+        </div>
+        <div class="tab-item">
+            <span class="emoji-icon">🏅</span>
+            <span>排行榜</span>
+        </div>
+        <div class="tab-item">
+            <span class="emoji-icon">👤</span>
+            <span>我</span>
+        </div>
+    </div>
+
+    <!-- 修复FontAwesome 6.0中不存在的图标 -->
+    <script>
+        // 替换不存在的图标
+        document.addEventListener('DOMContentLoaded', function() {
+            // 替换calendar-star
+            const calendarStarIcons = document.querySelectorAll('.fa-calendar-star');
+            calendarStarIcons.forEach(icon => {
+                icon.classList.remove('fa-calendar-star');
+                icon.classList.add('fa-calendar-check');
+            });
+            
+            // 替换grid-2
+            const grid2Icons = document.querySelectorAll('.fa-grid-2');
+            grid2Icons.forEach(icon => {
+                icon.classList.remove('fa-grid-2');
+                icon.classList.add('fa-th-large');
+            });
+            
+            // 替换ranking-star
+            const rankingStarIcons = document.querySelectorAll('.fa-ranking-star');
+            rankingStarIcons.forEach(icon => {
+                icon.classList.remove('fa-ranking-star');
+                icon.classList.add('fa-trophy');
+            });
+            
+            // 替换user-gear
+            const userGearIcons = document.querySelectorAll('.fa-user-gear');
+            userGearIcons.forEach(icon => {
+                icon.classList.remove('fa-user-gear');
+                icon.classList.add('fa-user');
+            });
+        });
+    </script>
+    <script src="../assets/js/idioms.js"></script>
+    <script src="../assets/js/game.js"></script>
+    <script src="../assets/js/levels.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <!-- 在现有脚本之后添加 -->
+    <script>
+        // 调试函数
+        function showDebugInfo(message) {
+            const debugElement = document.getElementById('debug-info');
+            if (debugElement) {
+                debugElement.style.display = 'block';
+                debugElement.innerHTML += message + '<br>';
+            }
+            console.log(message);
+        }
+        
+        window.onerror = function(message, source, lineno, colno, error) {
+            showDebugInfo(`错误: ${message}<br>位置: ${source}:${lineno}:${colno}`);
+            return true;
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            showDebugInfo('页面已加载');
+            
+            // 检查资源是否加载
+            if (typeof EmojiIdiomGame === 'undefined') {
+                showDebugInfo('警告: EmojiIdiomGame类未定义');
+            } else {
+                showDebugInfo('EmojiIdiomGame类已加载');
+            }
+            
+            // 检查DOM元素
+            const continueGameBtn = document.querySelector('.continue-game');
+            if (!continueGameBtn) {
+                showDebugInfo('警告: 继续游戏按钮未找到');
+            } else {
+                showDebugInfo('继续游戏按钮已找到');
+            }
+        });
+    </script>
+</body>
+</html> 

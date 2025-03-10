@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>启动页 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #FF9D6C 0%, #FF5E62 100%);
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: transparent;
+            color: white;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .splash-animation {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .loading-dots span {
+            animation: loadingDots 1.4s infinite ease-in-out both;
+            background-color: white;
+            border-radius: 50%;
+            display: inline-block;
+            height: 8px;
+            margin: 0 4px;
+            width: 8px;
+        }
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes loadingDots {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .game-controller {
+            font-size: 120px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .app-title {
+            background: linear-gradient(to right, #FFFFFF, #F5F5F5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 启动页内容 -->
+    <div class="flex flex-col items-center justify-center h-full splash-animation">
+        <div class="text-center">
+            <div class="game-controller">🎮</div>
+            <h1 class="text-4xl app-title mb-2">Emoji猜成语</h1>
+            <p class="text-white text-lg mb-8">用表情猜中国智慧</p>
+            
+            <div class="loading-dots mt-8">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <p class="text-white text-sm mt-16 opacity-70">版本 1.0.0</p>
+        </div>
+    </div>
+
+    <!-- 添加跳转脚本 -->
+    <script>
+        // 3秒后自动跳转到主页
+        setTimeout(function() {
+            window.location.href = 'home.html';
+        }, 3000);
+    </script>
+</body>
+</html> 

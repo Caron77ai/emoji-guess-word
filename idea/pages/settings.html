@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置页面 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8F9FA;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .nav-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        .settings-group {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .settings-item {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #F2F2F7;
+        }
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        .settings-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 18px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E5E5EA;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #4F46E5;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+        .logout-button {
+            background-color: #FF3B30;
+            color: white;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        .version-info {
+            text-align: center;
+            color: #8E8E93;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .setting-label {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <button class="text-gray-500">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="font-semibold">设置</div>
+        <div></div>
+    </div>
+
+    <!-- 设置内容 -->
+    <div class="p-4 overflow-auto h-full">
+        <!-- 基本设置 -->
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-sm mr-2"></div>
+                <h2 class="text-sm font-medium text-gray-500">默认语言</h2>
+            </div>
+            <div class="settings-group">
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-red-500 to-pink-500">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div>中文</div>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-check text-blue-500 mr-1"></i>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏设置 -->
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-sm mr-2"></div>
+                <h2 class="text-sm font-medium text-gray-500">游戏设置</h2>
+            </div>
+            <div class="settings-group">
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <div>计时模式</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div>提示使用限制</div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-gray-500 mr-2">每关3次</span>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-blue-500 to-indigo-500">
+                            <i class="fas fa-redo-alt"></i>
+                        </div>
+                        <div>重置游戏进度</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 显示设置 -->
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-gradient-to-r from-green-500 to-teal-500 rounded-sm mr-2"></div>
+                <h2 class="text-sm font-medium text-gray-500">显示设置</h2>
+            </div>
+            <div class="settings-group">
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-green-500 to-teal-500">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div>深色模式</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-green-500 to-teal-500">
+                            <i class="fas fa-text-height"></i>
+                        </div>
+                        <div>字体大小</div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-gray-500 mr-2">中</span>
+                        <i class="fas fa-chevron-right text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 其他设置 -->
+        <div class="mb-4">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-gradient-to-r from-purple-500 to-violet-500 rounded-sm mr-2"></div>
+                <h2 class="text-sm font-medium text-gray-500">其他</h2>
+            </div>
+            <div class="settings-group">
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-purple-500 to-violet-500">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div>检查更新</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-purple-500 to-violet-500">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div>帮助与反馈</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                <div class="settings-item">
+                    <div class="setting-label">
+                        <div class="settings-icon bg-gradient-to-r from-purple-500 to-violet-500">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div>关于我们</div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 退出登录 -->
+        <button class="logout-button mb-4">
+            <i class="fas fa-sign-out-alt mr-2"></i> 退出登录
+        </button>
+
+        <!-- 版本信息 -->
+        <div class="version-info">
+            <i class="far fa-copyright mr-1"></i> Emoji猜成语 v1.0.0<br>
+            © 2023 成语猜猜猜工作室
+        </div>
+    </div>
+</body>
+</html> 

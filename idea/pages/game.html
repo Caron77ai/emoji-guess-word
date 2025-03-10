@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏界面 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8F9FA;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .nav-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        .emoji-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .emoji-item {
+            background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(3, 169, 244, 0.1), inset 0 -2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .emoji-item:hover {
+            transform: translateY(-2px);
+        }
+        .emoji {
+            font-size: 60px;
+            line-height: 1;
+        }
+        .answer-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .answer-char {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #E5E5EA;
+        }
+        .answer-char.filled {
+            border-color: #4F46E5;
+            background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .key {
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.1s;
+        }
+        .key:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.05);
+        }
+        .function-key {
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+        }
+        .hint-badge {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+        }
+        .time-badge {
+            color: #4B5563;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            background-color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .difficulty-badge {
+            background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+        }
+        .submit-button {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: transform 0.2s;
+        }
+        .submit-button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <button class="text-gray-500">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="font-semibold">第 24 关</div>
+        <div class="flex items-center">
+            <div class="hint-badge mr-2">
+                <i class="fas fa-coins mr-1"></i> 320
+            </div>
+            <button class="text-gray-500">
+                <i class="fas fa-lightbulb"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 游戏内容 -->
+    <div class="p-4">
+        <!-- 难度和时间 -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="difficulty-badge">
+                <i class="fas fa-star-half-alt mr-1"></i> 中级难度
+            </div>
+            <div class="time-badge">
+                <i class="far fa-clock mr-1"></i> 01:45
+            </div>
+        </div>
+
+        <!-- Emoji提示区 -->
+        <div class="emoji-container mb-8">
+            <div class="emoji-item">
+                <div class="emoji">🐟</div>
+            </div>
+            <div class="emoji-item">
+                <div class="emoji">🌊</div>
+            </div>
+            <div class="emoji-item">
+                <div class="emoji">🐉</div>
+            </div>
+            <div class="emoji-item">
+                <div class="emoji">🚪</div>
+            </div>
+        </div>
+
+        <!-- 答案区域 -->
+        <div class="mb-8">
+            <p class="text-center text-gray-600 mb-3">填一个成语:</p>
+            <div class="answer-box">
+                <div class="answer-char filled">鱼</div>
+                <div class="answer-char"></div>
+                <div class="answer-char"></div>
+                <div class="answer-char"></div>
+            </div>
+        </div>
+
+        <!-- 确认按钮 -->
+        <div class="mb-8">
+            <button class="w-full submit-button py-3 rounded-full font-bold">
+                <i class="fas fa-check mr-2"></i> 提交答案
+            </button>
+        </div>
+
+        <!-- 虚拟键盘 -->
+        <div class="mt-auto">
+            <div class="grid grid-cols-7 gap-2 mb-2">
+                <div class="key">鱼</div>
+                <div class="key">龙</div>
+                <div class="key">门</div>
+                <div class="key">跃</div>
+                <div class="key">水</div>
+                <div class="key">江</div>
+                <div class="key">河</div>
+            </div>
+            <div class="grid grid-cols-7 gap-2 mb-2">
+                <div class="key">海</div>
+                <div class="key">湖</div>
+                <div class="key">泳</div>
+                <div class="key">游</div>
+                <div class="key">知</div>
+                <div class="key">如</div>
+                <div class="key">同</div>
+            </div>
+            <div class="grid grid-cols-7 gap-2">
+                <div class="key">跳</div>
+                <div class="key">入</div>
+                <div class="key">出</div>
+                <div class="key">山</div>
+                <div class="key">火</div>
+                <div class="key">木</div>
+                <div class="key function-key">
+                    <i class="fas fa-backspace"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

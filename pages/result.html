@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结果页面 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 添加 canvas-confetti 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8F9FA;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .result-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .result-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .star {
+            color: #FFD700;
+            font-size: 24px;
+            margin: 0 5px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F2F2F7;
+        }
+        .action-button {
+            border-radius: 12px;
+            padding: 14px 0;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        .primary-button {
+            background-color: #4F46E5;
+            color: white;
+        }
+        .secondary-button {
+            background-color: #F2F2F7;
+            color: #666;
+        }
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <!-- 添加 canvas 元素 -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div id="current-time">9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 结果内容 -->
+    <div class="p-4 h-full flex flex-col">
+        <div class="result-card flex-1 flex flex-col">
+            <div class="result-header">
+                <h1 class="text-2xl font-bold mb-2">恭喜通关！</h1>
+                
+                <!-- 星星评分 -->
+                <div class="star-rating mb-4">
+                    <div class="star"><i class="fas fa-star"></i></div>
+                    <div class="star"><i class="fas fa-star"></i></div>
+                    <div class="star"><i class="fas fa-star"></i></div>
+                </div>
+                
+                <!-- 答案模块 -->
+                <div class="bg-white bg-opacity-20 rounded-xl p-4 mx-4">
+                    <div class="mb-3">
+                        <p class="text-white text-opacity-80 text-sm mb-1">答案</p>
+                        <p class="text-4xl font-bold" id="idiom-text"></p>
+                    </div>
+                    <div class="border-t border-white border-opacity-20 pt-3">
+                        <p class="text-white text-opacity-80 text-sm mb-1">成语解释</p>
+                        <p class="text-white text-opacity-90 text-base" id="idiom-explanation"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 flex-1">
+                <!-- 用时和得分 -->
+                <div class="mb-4">
+                    <div class="info-row">
+                        <div class="text-gray-500">用时</div>
+                        <div class="font-medium" id="time-used">00:00</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="text-gray-500">使用提示</div>
+                        <div class="font-medium" id="hints-used">0次</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="text-gray-500">获得积分</div>
+                        <div class="font-medium text-green-600" id="points-earned">+0</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="text-gray-500">获得金币</div>
+                        <div class="font-medium text-yellow-600" id="coins-earned">+0</div>
+                    </div>
+                </div>
+                
+                <!-- 分享按钮 -->
+                <div class="mb-4">
+                    <button class="w-full border border-gray-300 rounded-full py-2 text-gray-600 flex items-center justify-center">
+                        <i class="fas fa-share-alt mr-2"></i> 分享
+                    </button>
+                </div>
+                
+                <!-- 返回关卡提示 -->
+                <div class="text-center text-sm text-gray-500 mb-4">
+                    <a href="levels.html" class="text-blue-500">返回关卡选择</a>
+                </div>
+            </div>
+            
+            <!-- 底部按钮 -->
+            <div class="p-4 border-t border-gray-100">
+                <button class="action-button primary-button" id="next-level-btn">
+                    下一关
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // 获取结果数据
+        const resultData = JSON.parse(localStorage.getItem('currentResult') || '{}');
+        const gameData = JSON.parse(localStorage.getItem('emojiIdiomGame') || '{}');
+        
+        if (resultData.answer) {
+            // 更新成语文本
+            document.getElementById('idiom-text').textContent = resultData.answer;
+                
+                // 更新成语解释
+            document.getElementById('idiom-explanation').textContent = resultData.hint || '';
+            
+            // 更新得分和金币
+            document.getElementById('points-earned').textContent = `+${resultData.points}`;
+            document.getElementById('coins-earned').textContent = `+${resultData.reward}`;
+            
+            // 更新用时
+            document.getElementById('time-used').textContent = resultData.timeUsed || '00:00';
+        }
+
+        // 下一关按钮点击事件
+        document.getElementById('next-level-btn').addEventListener('click', function() {
+            // 清除当前结果数据
+            localStorage.removeItem('currentResult');
+            
+            // 检查是否有下一关
+            if (resultData.nextLevel) {
+                // 直接跳转到下一关
+                window.location.href = `game.html?level=${resultData.nextLevel}`;
+            } else {
+                // 如果没有下一关数据，返回关卡选择页面
+                    window.location.href = 'levels.html';
+            }
+        });
+
+        // 修改礼花效果
+        window.onload = function() {
+            // 简单的礼花效果
+            confetti({
+                particleCount: 80,          // 减少粒子数量
+                spread: 50,                 // 减小扩散范围
+                origin: { y: 0.6 },         // 从屏幕中上方发射
+                colors: ['#FFD700', '#FFA500', '#4CAF50'], // 使用较少的颜色
+                gravity: 1.2,               // 增加重力，让粒子更快落下
+                scalar: 0.7,                // 缩小粒子尺寸
+                ticks: 150                  // 控制动画持续时间
+            });
+        };
+    </script>
+</body>
+</html> 

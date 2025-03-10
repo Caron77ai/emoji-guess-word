@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关卡选择 - Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8F9FA;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .nav-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        .tab-bar {
+            height: 60px;
+            background-color: white;
+            border-top: 1px solid #E5E5EA;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #8E8E93;
+            font-size: 10px;
+        }
+        .tab-item.active {
+            color: #4F46E5;
+        }
+        .tab-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .difficulty-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .difficulty-tab.active {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .level-item {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .level-completed {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+        }
+        .level-current {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+        .level-locked {
+            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+            color: #9CA3AF;
+        }
+        .level-check {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            background-color: #FBBF24;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
+            animation: bounce 1s ease infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: #E5E5EA;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10B981, #059669);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div>9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <button class="text-gray-500">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="font-semibold">选择关卡</div>
+        <div></div>
+    </div>
+
+    <!-- 关卡选择内容 -->
+    <div class="p-4 pb-16 overflow-auto h-full">
+        <!-- 难度选择 -->
+        <div class="flex justify-center space-x-3 mb-6">
+            <div class="difficulty-tab active">初级</div>
+            <div class="difficulty-tab">中级</div>
+            <div class="difficulty-tab">高级</div>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+                <div class="text-sm font-medium">初级难度</div>
+                <div class="text-sm text-gray-500">23/30</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 76.6%"></div>
+            </div>
+        </div>
+
+        <!-- 关卡网格 -->
+        <div class="level-grid">
+            <!-- 已完成关卡 -->
+            <div class="level-item level-completed">
+                1
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                2
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                3
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                4
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                5
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                6
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                7
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                8
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                9
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                10
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                11
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                12
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                13
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                14
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                15
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                16
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                17
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                18
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                19
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                20
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                21
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                22
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            <div class="level-item level-completed">
+                23
+                <div class="level-check">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+            
+            <!-- 当前关卡 -->
+            <div class="level-item level-current">
+                24
+            </div>
+            
+            <!-- 未解锁关卡 -->
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 25
+            </div>
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 26
+            </div>
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 27
+            </div>
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 28
+            </div>
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 29
+            </div>
+            <div class="level-item level-locked">
+                <i class="fas fa-lock text-gray-400 mr-1"></i> 30
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部标签栏 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <i class="fas fa-th"></i>
+            <span>关卡</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-trophy"></i>
+            <span>排行榜</span>
+        </div>
+        <div class="tab-item">
+            <i class="fas fa-user"></i>
+            <span>我</span>
+        </div>
+    </div>
+</body>
+</html> 

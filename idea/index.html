@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji猜成语 - 原型展示</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        .phone-frame {
+            width: 390px;
+            height: 844px;
+            background-color: white;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 10px solid #1a1a1a;
+            margin: 20px;
+            display: inline-block;
+        }
+        .phone-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .prototype-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-3xl font-bold text-center my-6">Emoji猜成语应用原型</h1>
+    
+    <div class="flex flex-wrap justify-center">
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">启动页</div>
+            <div class="phone-frame">
+                <iframe src="pages/splash.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">主页/菜单</div>
+            <div class="phone-frame">
+                <iframe src="pages/home.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">游戏界面</div>
+            <div class="phone-frame">
+                <iframe src="pages/game.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">关卡选择</div>
+            <div class="phone-frame">
+                <iframe src="pages/levels.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">结果页面</div>
+            <div class="phone-frame">
+                <iframe src="pages/result.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">个人中心</div>
+            <div class="phone-frame">
+                <iframe src="pages/profile.html"></iframe>
+            </div>
+        </div>
+        
+        <div class="flex flex-col items-center">
+            <div class="prototype-title">设置页面</div>
+            <div class="phone-frame">
+                <iframe src="pages/settings.html"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

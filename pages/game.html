@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji猜成语</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F8F9FA;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            color: #000;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .nav-bar {
+            height: 44px;
+            background-color: #F8F9FA;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        .emoji-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .emoji-item {
+            background: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%);
+            border-radius: 16px;
+            padding: 20px;
+            min-width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(3, 169, 244, 0.1), inset 0 -2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            flex: 1;
+        }
+        .emoji-item:hover {
+            transform: translateY(-2px);
+        }
+        .emoji {
+            font-size: 60px;
+            line-height: 1;
+        }
+        .answer-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .answer-char {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #E5E5EA;
+        }
+        .answer-char.filled {
+            border-color: #4F46E5;
+            background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+        }
+        .difficulty-badge {
+            background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+        }
+        .hint-badge {
+            background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+        }
+        .submit-button {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: transform 0.2s;
+        }
+        .submit-button:active {
+            transform: scale(0.98);
+        }
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .key {
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.1s;
+            cursor: pointer;
+        }
+        .key:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0 -1px 0 rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <div id="current-time">9:41</div>
+        <div class="flex space-x-2">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <button class="text-gray-500" onclick="window.location.href='levels.html'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="font-semibold" id="level-title">Emoji猜成语</div>
+        <div class="flex items-center">
+            <div class="hint-badge mr-2" id="coins-display">
+                <i class="fas fa-coins mr-1"></i> 0
+            </div>
+            <button class="text-gray-500" id="hint-button">
+                <i class="fas fa-lightbulb"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 游戏内容 -->
+    <div class="p-4">
+        <!-- 难度 -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="difficulty-badge" id="difficulty">
+                <i class="fas fa-star-half-alt mr-1"></i> 难度
+            </div>
+            </div>
+            
+        <!-- Emoji提示区 -->
+        <div class="emoji-container mb-8" id="emoji-container">
+                <!-- Emoji将通过JavaScript动态加载 -->
+            </div>
+            
+        <!-- 答案区域 -->
+        <div class="mb-8">
+            <p class="text-center text-gray-600 mb-3">填一个成语:</p>
+            <div class="answer-box" id="answer-inputs">
+                <!-- 输入框将通过JavaScript动态生成 -->
+            </div>
+            </div>
+            
+        <!-- 确认按钮 -->
+        <div class="mb-8">
+            <button class="w-full submit-button py-3 rounded-full font-bold" id="submit-button">
+                <i class="fas fa-check mr-2"></i> 提交答案
+            </button>
+        </div>
+        
+        <!-- 常用汉字键盘 -->
+        <div class="mt-auto" id="keyboard-container">
+            <!-- 键盘将根据成语动态生成 -->
+        </div>
+    </div>
+    
+    <script src="../assets/js/idioms2.js"></script>
+    <script>
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // 获取当前关卡
+        let levelId;
+        
+        try {
+            // 首先尝试从 URL 参数获取
+            const urlParams = new URLSearchParams(window.location.search);
+            const levelParam = urlParams.get('level');
+            
+            // 然后尝试从 localStorage 获取
+            const selectedLevel = localStorage.getItem('selectedLevel');
+            
+            console.log(`URL参数level: ${levelParam}, localStorage selectedLevel: ${selectedLevel}`);
+            
+            // 确定最终使用的关卡 ID
+            if (levelParam) {
+                levelId = parseInt(levelParam);
+            } else if (selectedLevel) {
+                levelId = parseInt(selectedLevel);
+            } else {
+                levelId = 1; // 默认为第一关
+            }
+            
+            console.log(`最终使用的levelId: ${levelId}`);
+            
+            // 获取游戏数据
+            const gameData = JSON.parse(localStorage.getItem('emojiIdiomGame') || '{}');
+            const coins = gameData.coins || 0;
+            
+            // 显示金币
+            document.getElementById('coins-display').innerHTML = `<i class="fas fa-coins mr-1"></i> ${coins}`;
+            
+            // 检查idioms是否存在
+            if (typeof idioms === 'undefined') {
+                console.error('错误: idioms未定义，请检查idioms.js是否正确加载');
+                throw new Error('idioms未定义');
+            }
+            
+            // 从idioms.js获取关卡数据
+            const levelData = idioms.find(item => item.id === levelId);
+            
+            console.log(`找到的关卡数据:`, levelData);
+            
+            if (!levelData) {
+                console.error(`错误: 未找到ID为${levelId}的关卡数据`);
+                alert('关卡数据不存在！');
+                window.location.href = 'levels.html';
+                throw new Error('关卡数据不存在');
+            }
+            
+            // 设置页面标题
+            document.getElementById('level-title').textContent = `第${levelId}关`;
+            
+            // 设置难度
+            document.getElementById('difficulty').innerHTML = `<i class="fas fa-star-half-alt mr-1"></i> ${levelData.difficulty}`;
+            
+            // 生成Emoji显示 - 修改为横向排列
+            const emojiContainer = document.getElementById('emoji-container');
+            
+            // 清空容器
+            emojiContainer.innerHTML = '';
+            
+            // 添加Emoji
+            levelData.emojis.forEach(emoji => {
+                const emojiDiv = document.createElement('div');
+                emojiDiv.className = 'emoji-item';
+                emojiDiv.innerHTML = `<div class="emoji">${emoji}</div>`;
+                emojiContainer.appendChild(emojiDiv);
+            });
+            
+            // 根据Emoji数量动态调整大小
+            const emojiCount = levelData.emojis.length;
+            if (emojiCount > 4) {
+                // 如果超过4个，减小大小
+                document.querySelectorAll('.emoji-item').forEach(item => {
+                    item.style.padding = '15px';
+                    item.style.minWidth = '60px';
+                    item.style.height = '60px';
+                });
+                
+                document.querySelectorAll('.emoji').forEach(emoji => {
+                    emoji.style.fontSize = '40px';
+                });
+            }
+            
+            // 生成答案输入框
+            const answerInputs = document.getElementById('answer-inputs');
+            const answerChars = [];
+            
+            for (let i = 0; i < levelData.answer.length; i++) {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'answer-char';
+                charDiv.dataset.index = i;
+                answerInputs.appendChild(charDiv);
+                answerChars.push(charDiv);
+            }
+            
+            // 生成虚拟键盘
+            const keyboardContainer = document.getElementById('keyboard-container');
+            
+            // 创建一组常用汉字，包括成语中的字符
+            const commonChars = ['的', '一', '是', '了', '我', '不', '人', '在', '他', '有', '这', '个', '上', '们', '来', '到', '时', '大', '地', '为'];
+            
+            // 确保键盘包含成语中的所有字符
+            const answerCharsSet = new Set(levelData.answer.split(''));
+            const keyboardChars = [...answerCharsSet, ...commonChars].slice(0, 21); // 限制为21个字符
+            
+            // 随机排序键盘字符
+            keyboardChars.sort(() => Math.random() - 0.5);
+            
+            // 创建键盘行
+            for (let row = 0; row < 3; row++) {
+                const keyboardRow = document.createElement('div');
+                keyboardRow.className = 'grid grid-cols-7 gap-2 mb-2';
+                
+                for (let col = 0; col < 7; col++) {
+                    const index = row * 7 + col;
+                    if (index < keyboardChars.length) {
+                        const key = document.createElement('div');
+                        key.className = 'key';
+                        key.textContent = keyboardChars[index];
+                        
+                        // 添加点击事件
+                        key.addEventListener('click', function() {
+                            // 找到第一个空的输入框
+                            const emptyChar = answerChars.find(char => !char.textContent);
+                            if (emptyChar) {
+                                emptyChar.textContent = this.textContent;
+                                emptyChar.classList.add('filled');
+                            }
+                        });
+                        
+                        keyboardRow.appendChild(key);
+                    } else if (row === 2 && col === 6) {
+                        // 添加退格键
+                        const backspaceKey = document.createElement('div');
+                        backspaceKey.className = 'key';
+                        backspaceKey.innerHTML = '<i class="fas fa-backspace"></i>';
+                        
+                        // 添加点击事件
+                        backspaceKey.addEventListener('click', function() {
+                            // 找到最后一个已填充的输入框
+                            for (let i = answerChars.length - 1; i >= 0; i--) {
+                                if (answerChars[i].textContent) {
+                                    answerChars[i].textContent = '';
+                                    answerChars[i].classList.remove('filled');
+                                    break;
+                                }
+                            }
+                        });
+                        
+                        keyboardRow.appendChild(backspaceKey);
+                    } else {
+                        // 添加空白键
+                        const emptyKey = document.createElement('div');
+                        emptyKey.className = 'key invisible';
+                        keyboardRow.appendChild(emptyKey);
+                    }
+                }
+                
+                keyboardContainer.appendChild(keyboardRow);
+            }
+            
+            // 添加开始时间记录
+            const startTime = Date.now();
+            
+            // 提交答案
+            document.getElementById('submit-button').addEventListener('click', function() {
+                let answer = '';
+                answerChars.forEach(char => {
+                    answer += char.textContent || '';
+                });
+                
+                if (answer === levelData.answer) {
+                    // 计算用时（毫秒转换为秒）
+                    const timeUsed = Math.floor((Date.now() - startTime) / 1000);
+                    const minutes = Math.floor(timeUsed / 60);
+                    const seconds = timeUsed % 60;
+                    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // 保存游戏进度
+                    const nextLevel = levelId + 1;
+                    gameData.currentLevel = Math.max(gameData.currentLevel || 1, nextLevel);
+                    gameData.score = (gameData.score || 0) + levelData.points;
+                    gameData.coins = (gameData.coins || 0) + levelData.reward;
+                    localStorage.setItem('emojiIdiomGame', JSON.stringify(gameData));
+                    
+                    // 保存当前关卡信息到 localStorage，添加用时信息
+                    const resultData = {
+                        levelId: levelId,
+                        answer: levelData.answer,
+                        points: levelData.points,
+                        reward: levelData.reward,
+                        hint: levelData.hint,
+                        nextLevel: nextLevel,
+                        timeUsed: formattedTime  // 添加用时信息
+                    };
+                    localStorage.setItem('currentResult', JSON.stringify(resultData));
+                    
+                    // 记录完成的关卡
+                    if (!gameData.completedLevels) {
+                        gameData.completedLevels = [];
+                    }
+                    if (!gameData.completedLevels.includes(levelId)) {
+                        gameData.completedLevels.push(levelId);
+                    }
+                    localStorage.setItem('emojiIdiomGame', JSON.stringify(gameData));
+                    
+                    // 跳转到结果页面
+                    window.location.href = 'result.html';
+                } else {
+                    // 清空所有输入框
+                    answerChars.forEach(char => {
+                        char.textContent = '';
+                        char.classList.remove('filled');
+                    });
+                    alert('答案不正确，请重试！');
+                }
+            });
+            
+            // 提示按钮
+            document.getElementById('hint-button').addEventListener('click', function() {
+                const hintCost = 30;
+                
+                if (coins >= hintCost) {
+                    if (confirm(`使用提示将消耗${hintCost}金币，确定使用吗？`)) {
+                        gameData.coins = coins - hintCost;
+                        localStorage.setItem('emojiIdiomGame', JSON.stringify(gameData));
+                        
+                        // 找到第一个空的输入框
+                        for (let i = 0; i < answerChars.length; i++) {
+                            if (!answerChars[i].textContent) {
+                                answerChars[i].textContent = levelData.answer[i];
+                                answerChars[i].classList.add('filled');
+                                break;
+                            }
+                        }
+                        
+                        // 更新显示的金币数量
+                        document.getElementById('coins-display').innerHTML = `<i class="fas fa-coins mr-1"></i> ${gameData.coins}`;
+                        
+                        alert(`已使用提示，消耗${hintCost}金币`);
+                    }
+                } else {
+                    alert('金币不足，无法使用提示！');
+                }
+            });
+            
+        } catch (error) {
+            console.error(`发生错误: ${error.message}`);
+        }
+    </script>
+</body>
+</html>
