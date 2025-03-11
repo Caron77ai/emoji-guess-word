@@ -17,7 +17,7 @@ Emoji猜成语是一款有趣的HTML5网页游戏，将现代表情符号与中�
 
 ## 🚀 在线体验
 
-[点击这里体验游戏](https://your-game-url.com)
+[点击这里体验游戏](https://Caron77ai.github.io/emoji-guess-word/)
 
 ## 🛠️ 技术栈
 
