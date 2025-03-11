@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>主页 - Emoji猜成语</title>
+    <title>Emoji猜成语 - 首页</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/phone-frame.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -30,12 +31,15 @@
             height: 60px;
             background-color: white;
             border-top: 1px solid #E5E5EA;
-            position: fixed;
+            position: absolute;
             bottom: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
+            width: auto;
             display: flex;
             justify-content: space-around;
             align-items: center;
+            z-index: 10;
         }
         .tab-item {
             display: flex;
@@ -187,113 +191,117 @@
     </style>
 </head>
 <body>
-    <!-- 在body开始处添加 -->
-    <div id="debug-info" style="position: fixed; top: 50px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; z-index: 9999; font-size: 12px; max-width: 300px; display: none;">
-        调试信息将显示在这里
-    </div>
-
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div>9:41</div>
-        <div class="flex space-x-2">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-full"></i>
-        </div>
-    </div>
-
-    <!-- 主页内容 -->
-    <div class="p-5 pb-20 overflow-auto h-full">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-xl font-bold">你好，玩家！</h1>
-                <p class="text-gray-500 text-sm">今天来挑战一下成语知识吧</p>
+    <div class="phone-frame">
+        <div class="phone-content">
+            <!-- 在body开始处添加 -->
+            <div id="debug-info" style="position: fixed; top: 50px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; z-index: 9999; font-size: 12px; max-width: 300px; display: none;">
+                调试信息将显示在这里
             </div>
-            <div class="avatar">
-                😊
-            </div>
-        </div>
 
-        <!-- 继续游戏卡片 -->
-        <div class="continue-game mb-6">
-            <div>
-                <h2 class="font-bold text-lg">继续游戏</h2>
-                <p class="text-sm text-white text-opacity-80">第 24 关 - 中级难度</p>
-            </div>
-            <div class="play-button">
-                <span class="icon-pulse">▶️</span>
-            </div>
-        </div>
-
-        <!-- 游戏模式 -->
-        <div class="section-title">游戏模式</div>
-        <div class="game-modes-grid mb-6">
-            <div class="game-mode-card">
-                <div class="emoji-icon-container classic-icon">
-                    🧩
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="flex space-x-2">
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-full"></i>
                 </div>
-                <div class="font-medium text-center text-sm">经典模式</div>
-                <div class="text-xs text-gray-500 text-center mt-1">按照关卡逐步解锁</div>
             </div>
-            
-            <div class="game-mode-card">
-                <div class="emoji-icon-container time-icon">
-                    ⏱️
-                </div>
-                <div class="font-medium text-center text-sm">限时挑战</div>
-                <div class="text-xs text-gray-500 text-center mt-1">争分夺秒解题闯关</div>
-            </div>
-            
-            <div class="game-mode-card">
-                <div class="emoji-icon-container rank-icon">
-                    🏆
-                </div>
-                <div class="font-medium text-center text-sm">排行榜</div>
-                <div class="text-xs text-gray-500 text-center mt-1">与好友一较高下</div>
-            </div>
-            
-            <div class="game-mode-card">
-                <div class="emoji-icon-container daily-icon">
-                    📅
-                </div>
-                <div class="font-medium text-center text-sm">每日挑战</div>
-                <div class="text-xs text-gray-500 text-center mt-1">每天一道成语题目</div>
-            </div>
-        </div>
 
-        <!-- 我的成就 -->
-        <div class="section-title">我的成就</div>
-        <div class="progress-container">
-            <div class="flex justify-between items-center">
-                <div class="text-sm text-gray-500 flex items-center">
-                    <span class="mr-2">🏅</span>
-                    已完成关卡
+            <!-- 主页内容 -->
+            <div class="p-5 pb-20 overflow-auto h-full">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-xl font-bold">你好，玩家！</h1>
+                        <p class="text-gray-500 text-sm">今天来挑战一下成语知识吧</p>
+                    </div>
+                    <div class="avatar">
+                        😊
+                    </div>
                 </div>
-                <div class="text-sm font-medium">23/100</div>
-            </div>
-            <div class="progress-bar mt-2">
-                <div class="progress-fill" style="width: 23%"></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 底部标签栏 -->
-    <div class="tab-bar">
-        <div class="tab-item active">
-            <span class="emoji-icon">🏠</span>
-            <span>首页</span>
-        </div>
-        <div class="tab-item">
-            <span class="emoji-icon">🎮</span>
-            <span>关卡</span>
-        </div>
-        <div class="tab-item">
-            <span class="emoji-icon">🏅</span>
-            <span>排行榜</span>
-        </div>
-        <div class="tab-item">
-            <span class="emoji-icon">👤</span>
-            <span>我</span>
+                <!-- 继续游戏卡片 -->
+                <div class="continue-game mb-6" id="continue-game-card">
+                    <div>
+                        <h2 class="font-bold text-lg">继续游戏</h2>
+                        <p class="text-sm text-white text-opacity-80" id="current-level-info">加载中...</p>
+                    </div>
+                    <div class="play-button" id="continue-button">
+                        <span class="icon-pulse">▶️</span>
+                    </div>
+                </div>
+
+                <!-- 游戏模式 -->
+                <div class="section-title">游戏模式</div>
+                <div class="game-modes-grid mb-6">
+                    <div class="game-mode-card">
+                        <div class="emoji-icon-container classic-icon">
+                            🧩
+                        </div>
+                        <div class="font-medium text-center text-sm">经典模式</div>
+                        <div class="text-xs text-gray-500 text-center mt-1">按照关卡逐步解锁</div>
+                    </div>
+                    
+                    <div class="game-mode-card">
+                        <div class="emoji-icon-container time-icon">
+                            ⏱️
+                        </div>
+                        <div class="font-medium text-center text-sm">限时挑战</div>
+                        <div class="text-xs text-gray-500 text-center mt-1">争分夺秒解题闯关</div>
+                    </div>
+                    
+                    <div class="game-mode-card">
+                        <div class="emoji-icon-container rank-icon">
+                            🏆
+                        </div>
+                        <div class="font-medium text-center text-sm">排行榜</div>
+                        <div class="text-xs text-gray-500 text-center mt-1">与好友一较高下</div>
+                    </div>
+                    
+                    <div class="game-mode-card">
+                        <div class="emoji-icon-container daily-icon">
+                            📅
+                        </div>
+                        <div class="font-medium text-center text-sm">每日挑战</div>
+                        <div class="text-xs text-gray-500 text-center mt-1">每天一道成语题目</div>
+                    </div>
+                </div>
+
+                <!-- 我的成就 -->
+                <div class="section-title">我的成就</div>
+                <div class="progress-container">
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm text-gray-500 flex items-center">
+                            <span class="mr-2">🏅</span>
+                            已完成关卡
+                        </div>
+                        <div class="text-sm font-medium">23/100</div>
+                    </div>
+                    <div class="progress-bar mt-2">
+                        <div class="progress-fill" style="width: 23%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部标签栏 -->
+            <div class="tab-bar">
+                <div class="tab-item active">
+                    <span class="emoji-icon">🏠</span>
+                    <span>首页</span>
+                </div>
+                <div class="tab-item">
+                    <span class="emoji-icon">🎮</span>
+                    <span>关卡</span>
+                </div>
+                <div class="tab-item">
+                    <span class="emoji-icon">🏅</span>
+                    <span>排行榜</span>
+                </div>
+                <div class="tab-item">
+                    <span class="emoji-icon">👤</span>
+                    <span>我</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -368,6 +376,125 @@
                 showDebugInfo('警告: 继续游戏按钮未找到');
             } else {
                 showDebugInfo('继续游戏按钮已找到');
+            }
+            
+            // 更新继续游戏卡片
+            updateContinueGameCard();
+            
+            // 绑定继续游戏按钮点击事件
+            const continueButton = document.getElementById('continue-button');
+            const continueGameCard = document.getElementById('continue-game-card');
+            
+            if (continueButton && continueGameCard) {
+                continueGameCard.addEventListener('click', function() {
+                    // 获取当前关卡
+                    const currentLevel = getCurrentLevel();
+                    // 跳转到游戏页面
+                    window.location.href = `game.html?level=${currentLevel}`;
+                });
+            }
+            
+            // 获取当前关卡
+            function getCurrentLevel() {
+                // 从localStorage读取当前关卡
+                const savedLevel = localStorage.getItem('emojiIdiomCurrentLevel');
+                if (savedLevel) {
+                    return parseInt(savedLevel);
+                }
+                
+                // 如果没有保存的当前关卡，则根据已完成的关卡计算
+                const completedLevels = getCompletedLevels();
+                if (completedLevels.length > 0) {
+                    // 当前关卡是最后一个已完成关卡的下一关
+                    const maxCompletedLevel = Math.max(...completedLevels);
+                    return maxCompletedLevel + 1;
+                }
+                
+                // 如果没有已完成的关卡，则从第一关开始
+                return 1;
+            }
+            
+            // 获取已完成的关卡
+            function getCompletedLevels() {
+                const completedLevels = [];
+                
+                // 尝试读取新格式的进度数据
+                const progressData = localStorage.getItem('emojiIdiomProgress');
+                if (progressData) {
+                    try {
+                        const progress = JSON.parse(progressData);
+                        if (progress && typeof progress === 'object') {
+                            if (Array.isArray(progress.easy)) completedLevels.push(...progress.easy);
+                            if (Array.isArray(progress.medium)) completedLevels.push(...progress.medium);
+                            if (Array.isArray(progress.hard)) completedLevels.push(...progress.hard);
+                        }
+                    } catch (e) {
+                        console.error('解析进度数据失败:', e);
+                    }
+                }
+                
+                // 尝试读取旧格式的进度数据
+                if (completedLevels.length === 0) {
+                    const oldProgress = localStorage.getItem('emojiIdiomGame');
+                    if (oldProgress) {
+                        try {
+                            const progress = JSON.parse(oldProgress);
+                            if (progress && typeof progress === 'object') {
+                                Object.values(progress).forEach(arr => {
+                                    if (Array.isArray(arr)) completedLevels.push(...arr);
+                                });
+                            }
+                        } catch (e) {
+                            console.error('解析旧格式进度数据失败:', e);
+                        }
+                    }
+                    
+                    const oldCompletedLevels = localStorage.getItem('completedLevels');
+                    if (oldCompletedLevels) {
+                        try {
+                            const levels = JSON.parse(oldCompletedLevels);
+                            if (Array.isArray(levels)) {
+                                completedLevels.push(...levels);
+                            }
+                        } catch (e) {
+                            console.error('解析旧格式完成关卡数据失败:', e);
+                        }
+                    }
+                }
+                
+                return completedLevels;
+            }
+            
+            // 获取关卡难度名称
+            function getLevelDifficultyName(levelId) {
+                if (levelId >= 1 && levelId <= 33) {
+                    return '初级难度';
+                } else if (levelId >= 34 && levelId <= 66) {
+                    return '中级难度';
+                } else if (levelId >= 67 && levelId <= 102) {
+                    return '高级难度';
+                }
+                return '未知难度';
+            }
+            
+            // 更新继续游戏卡片
+            function updateContinueGameCard() {
+                const currentLevelInfo = document.getElementById('current-level-info');
+                if (!currentLevelInfo) return;
+                
+                const currentLevel = getCurrentLevel();
+                const difficultyName = getLevelDifficultyName(currentLevel);
+                
+                currentLevelInfo.textContent = `第 ${currentLevel} 关 - ${difficultyName}`;
+                
+                // 如果是第一关且没有进度，可以显示"开始游戏"而不是"继续游戏"
+                const continueGameCard = document.getElementById('continue-game-card');
+                const completedLevels = getCompletedLevels();
+                const isFirstGame = currentLevel === 1 && completedLevels.length === 0;
+                
+                if (isFirstGame && continueGameCard) {
+                    continueGameCard.querySelector('h2').textContent = '开始游戏';
+                }
             }
         });
     </script>

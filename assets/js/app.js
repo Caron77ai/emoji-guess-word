@@ -434,3 +434,43 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.remove();
     }, 2000);
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabItems = document.querySelectorAll('.tab-bar .tab-item');
+    
+    // 页面路由映射
+    const routes = {
+        'home': 'index.html',
+        'levels': 'levels.html',
+        'profile': 'profile.html'
+    };
+
+    tabItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // 获取当前标签对应的页面
+            const icon = this.querySelector('i');
+            let page = '';
+            
+            // 排行榜图标不添加跳转
+            if (icon.classList.contains('fa-trophy')) {
+                return;
+            }
+            
+            if (icon.classList.contains('fa-home')) {
+                page = 'home';
+            } else if (icon.classList.contains('fa-th')) {
+                page = 'levels';
+            } else if (icon.classList.contains('fa-user')) {
+                page = 'profile';
+            }
+
+            // 如果不是当前页面，则进行跳转
+            if (page && routes[page]) {
+                const currentPage = window.location.pathname.split('/').pop();
+                if (currentPage !== routes[page]) {
+                    window.location.href = routes[page];
+                }
+            }
+        });
+    });
+  });

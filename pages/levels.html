@@ -6,7 +6,7 @@
     <title>关卡选择 - Emoji猜成语</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/phone-frame.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -39,12 +39,15 @@
             height: 60px;
             background-color: white;
             border-top: 1px solid #E5E5EA;
-            position: fixed;
+            position: absolute;
             bottom: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
+            width: auto;
             display: flex;
             justify-content: space-around;
             align-items: center;
+            z-index: 10;
         }
         .tab-item {
             display: flex;
@@ -56,7 +59,7 @@
         .tab-item.active {
             color: #4F46E5;
         }
-        .tab-item i {
+        .tab-item i, .tab-item .emoji-icon {
             font-size: 20px;
             margin-bottom: 4px;
         }
@@ -66,6 +69,7 @@
             font-size: 14px;
             color: #666;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .difficulty-tab.active {
             background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
@@ -76,6 +80,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
+            margin-top: 16px;
         }
         .level-item {
             width: 100%;
@@ -99,16 +104,10 @@
             animation: pulse 2s infinite;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-            }
+        .level-unlocked {
+            background: white;
+            color: #4F46E5;
+            border: 2px solid #4F46E5;
         }
         .level-locked {
             background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
@@ -130,591 +129,473 @@
             box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
             animation: bounce 1s ease infinite;
         }
+        .difficulty-lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            z-index: 5;
+        }
+        .difficulty-locked::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
-        .progress-bar {
+        .progress-bar-container {
             height: 8px;
             background-color: #E5E5EA;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 8px;
         }
-        .progress-fill {
+        .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #10B981, #059669);
             border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .level-animation {
+            animation: levelAppear 0.3s forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        @keyframes levelAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            margin-bottom: 8px;
+        }
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+        .level-locked:hover .tooltip {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <!-- 在body开始处添加 -->
-    <div id="debug-info" style="position: fixed; top: 50px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; z-index: 9999; font-size: 12px; max-width: 300px; display: none;">
-        调试信息将显示在这里
-    </div>
+    <div class="phone-frame">
+        <div class="phone-content">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="flex space-x-2">
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-full"></i>
+                </div>
+            </div>
 
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div>9:41</div>
-        <div class="flex space-x-2">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-full"></i>
-        </div>
-    </div>
+            <!-- 导航栏 -->
+            <div class="nav-bar">
+                <a href="home.html" class="text-gray-500">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="font-semibold">选择关卡</div>
+                <div></div>
+            </div>
 
-    <!-- 导航栏 -->
-    <div class="nav-bar">
-        <button class="text-gray-500">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <div class="font-semibold">选择关卡</div>
-        <div></div>
-    </div>
+            <!-- 关卡选择内容 -->
+            <div class="p-4 pb-16 overflow-auto h-full">
+                <!-- 难度选择 -->
+                <div id="difficulty-tabs" class="flex justify-center space-x-3 mb-6">
+                    <div class="difficulty-tab" data-difficulty="easy">初级</div>
+                    <div class="difficulty-tab" data-difficulty="medium">中级</div>
+                    <div class="difficulty-tab" data-difficulty="hard">高级</div>
+                </div>
 
-    <!-- 关卡选择内容 -->
-    <div class="p-4 pb-16 overflow-auto h-full">
-        <!-- 难度选择 -->
-        <div class="flex justify-center space-x-3 mb-6">
-            <div class="difficulty-tab active">初级</div>
-            <div class="difficulty-tab">中级</div>
-            <div class="difficulty-tab">高级</div>
-        </div>
+                <!-- 进度条 -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="text-sm font-medium" id="difficulty-text">初级难度</div>
+                        <div class="text-sm text-gray-500" id="progress-text">0/33</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
 
-        <!-- 进度条 -->
-        <div class="mb-6">
-            <div class="flex justify-between items-center mb-2">
-                <div class="text-sm font-medium">初级难度</div>
-                <div class="text-sm text-gray-500">23/30</div>
+                <!-- 关卡网格 -->
+                <div class="level-grid" id="levels-container">
+                    <!-- 关卡会动态插入这里 -->
+                </div>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: 76.6%"></div>
-            </div>
-        </div>
 
-        <!-- 关卡网格 -->
-        <div class="level-grid">
-            <!-- 已完成关卡 -->
-            <div class="level-item level-completed">
-                1
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
+            <!-- 底部标签栏 -->
+            <div class="tab-bar">
+                <div class="tab-item" onclick="window.location.href='home.html'">
+                    <span class="emoji-icon">🏠</span>
+                    <span>首页</span>
                 </div>
-            </div>
-            <div class="level-item level-completed">
-                2
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
+                <div class="tab-item">
+                    <span class="emoji-icon">🎮</span>
+                    <span>关卡</span>
                 </div>
-            </div>
-            <div class="level-item level-completed">
-                3
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
+                <div class="tab-item">
+                    <span class="emoji-icon">🏅</span>
+                    <span>排行榜</span>
                 </div>
-            </div>
-            <div class="level-item level-completed">
-                4
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
+                <div class="tab-item" onclick="window.location.href='profile.html'">
+                    <span class="emoji-icon">👤</span>
+                    <span>我</span>
                 </div>
-            </div>
-            <div class="level-item level-completed">
-                5
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                6
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                7
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                8
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                9
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                10
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                11
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                12
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                13
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                14
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                15
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                16
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                17
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                18
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                19
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                20
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                21
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                22
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            <div class="level-item level-completed">
-                23
-                <div class="level-check">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            
-            <!-- 当前关卡 -->
-            <div class="level-item level-current">
-                24
-            </div>
-            
-            <!-- 未解锁关卡 -->
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 25
-            </div>
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 26
-            </div>
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 27
-            </div>
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 28
-            </div>
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 29
-            </div>
-            <div class="level-item level-locked">
-                <i class="fas fa-lock text-gray-400 mr-1"></i> 30
             </div>
         </div>
     </div>
 
-    <!-- 底部标签栏 -->
-    <div class="tab-bar">
-        <div class="tab-item">
-            <i class="fas fa-home"></i>
-            <span>首页</span>
-        </div>
-        <div class="tab-item active">
-            <i class="fas fa-th"></i>
-            <span>关卡</span>
-        </div>
-        <div class="tab-item">
-            <i class="fas fa-trophy"></i>
-            <span>排行榜</span>
-        </div>
-        <div class="tab-item">
-            <i class="fas fa-user"></i>
-            <span>我</span>
-        </div>
-    </div>
-
-    <!-- 在body结束标签前添加以下脚本引用 -->
-    <script src="../assets/js/idioms2.js"></script>
-    <script src="../assets/js/game.js"></script>
+    <script src="../assets/js/idioms.js"></script>
     <script src="../assets/js/levels.js"></script>
-    <script src="../assets/js/app.js"></script>
+    <!-- 不需要额外的脚本，使用levels.js中的LevelsManager -->
+
     <script>
         // 调试函数
-        function showDebugInfo(message) {
-            const debugElement = document.getElementById('debug-info');
-            if (debugElement) {
-                debugElement.style.display = 'block';
-                debugElement.innerHTML += message + '<br>';
-            }
+        function showDebug(message) {
             console.log(message);
-        }
-        
-        window.onerror = function(message, source, lineno, colno, error) {
-            showDebugInfo(`错误: ${message}<br>位置: ${source}:${lineno}:${colno}`);
-            return true;
-        };
-        
-        // 显示调试信息按钮
-        const showDebugButton = document.createElement('button');
-        showDebugButton.textContent = 'DEBUG';
-        showDebugButton.style.position = 'fixed';
-        showDebugButton.style.bottom = '70px';
-        showDebugButton.style.right = '10px';
-        showDebugButton.style.zIndex = '9999';
-        showDebugButton.style.padding = '5px 10px';
-        showDebugButton.style.background = '#333';
-        showDebugButton.style.color = 'white';
-        showDebugButton.style.border = 'none';
-        showDebugButton.style.borderRadius = '5px';
-        showDebugButton.onclick = function() {
-            const debugElement = document.getElementById('debug-info');
-            if (debugElement) {
-                debugElement.style.display = debugElement.style.display === 'none' ? 'block' : 'none';
+            // 如果有调试元素，则显示在页面上
+            const debugEl = document.getElementById('debug-info');
+            if (debugEl) {
+                debugEl.style.display = 'block';
+                debugEl.innerHTML += message + '<br>';
             }
-        };
-        document.body.appendChild(showDebugButton);
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
-            showDebugInfo('关卡页面已加载');
+            showDebug('页面加载完成');
             
-            // 初始化游戏数据
-            try {
-                // 检查游戏数据
-                if (!localStorage.getItem('emojiIdiomGame')) {
-                    // 创建初始游戏数据
-                    const initialGameData = {
-                        currentLevel: 1,
-                        score: 0,
-                        coins: 100,
-                        unlockedLevels: [1]
-                    };
-                    localStorage.setItem('emojiIdiomGame', JSON.stringify(initialGameData));
-                    showDebugInfo('已创建初始游戏数据');
+            const difficultyTabs = document.getElementById('difficulty-tabs');
+            const levelsContainer = document.getElementById('levels-container');
+            const difficultyText = document.getElementById('difficulty-text');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+
+            // 难度映射表
+            const difficultyNames = {
+                'easy': '初级难度',
+                'medium': '中级难度',
+                'hard': '高级难度'
+            };
+
+            // 难度范围定义
+            const difficultyRanges = {
+                'easy': { start: 1, end: 33 },
+                'medium': { start: 34, end: 66 },
+                'hard': { start: 67, end: 102 }
+            };
+            
+            // 难度顺序
+            const difficultyOrder = ['easy', 'medium', 'hard'];
+
+            // 获取已完成的关卡列表
+            function getCompletedLevels() {
+                const completedLevels = [];
+                
+                // 尝试读取新格式的进度数据
+                const progressData = localStorage.getItem('emojiIdiomProgress');
+                if (progressData) {
+                    try {
+                        const progress = JSON.parse(progressData);
+                        showDebug('找到新格式进度数据: ' + JSON.stringify(progress));
+                        if (progress && typeof progress === 'object') {
+                            if (Array.isArray(progress.easy)) completedLevels.push(...progress.easy);
+                            if (Array.isArray(progress.medium)) completedLevels.push(...progress.medium);
+                            if (Array.isArray(progress.hard)) completedLevels.push(...progress.hard);
+                        }
+                    } catch (e) {
+                        showDebug('解析进度数据失败: ' + e.message);
+                    }
                 }
                 
-                // 获取游戏数据
-                const gameData = JSON.parse(localStorage.getItem('emojiIdiomGame'));
-                showDebugInfo('游戏数据: ' + JSON.stringify(gameData));
+                // 尝试读取旧格式的进度数据
+                if (completedLevels.length === 0) {
+                    const oldProgress = localStorage.getItem('emojiIdiomGame');
+                    if (oldProgress) {
+                        try {
+                            const progress = JSON.parse(oldProgress);
+                            showDebug('找到旧格式进度数据(emojiIdiomGame): ' + JSON.stringify(progress));
+                            if (progress && typeof progress === 'object') {
+                                Object.values(progress).forEach(arr => {
+                                    if (Array.isArray(arr)) completedLevels.push(...arr);
+                                });
+                            }
+                        } catch (e) {
+                            showDebug('解析旧格式进度数据失败: ' + e.message);
+                        }
+                    }
+                    
+                    const oldCompletedLevels = localStorage.getItem('completedLevels');
+                    if (oldCompletedLevels) {
+                        try {
+                            const levels = JSON.parse(oldCompletedLevels);
+                            showDebug('找到旧格式进度数据(completedLevels): ' + JSON.stringify(levels));
+                            if (Array.isArray(levels)) {
+                                completedLevels.push(...levels);
+                            }
+                        } catch (e) {
+                            showDebug('解析旧格式完成关卡数据失败: ' + e.message);
+                        }
+                    }
+                }
                 
-                // 获取当前关卡
-                const currentLevel = gameData.currentLevel || 1;
-                showDebugInfo('当前关卡: ' + currentLevel);
+                showDebug('已完成关卡列表: ' + JSON.stringify(completedLevels));
+                return completedLevels;
+            }
+            
+            // 获取当前关卡
+            function getCurrentLevel() {
+                // 从localStorage读取当前关卡
+                const savedLevel = localStorage.getItem('emojiIdiomCurrentLevel');
+                if (savedLevel) {
+                    const level = parseInt(savedLevel);
+                    showDebug('从localStorage读取当前关卡: ' + level);
+                    return level;
+                }
+                
+                // 如果没有保存的当前关卡，则根据已完成的关卡计算
+                const completedLevels = getCompletedLevels();
+                if (completedLevels.length > 0) {
+                    // 当前关卡是最后一个已完成关卡的下一关
+                    const maxCompletedLevel = Math.max(...completedLevels);
+                    const nextLevel = maxCompletedLevel + 1;
+                    showDebug('根据已完成关卡计算当前关卡: ' + nextLevel);
+                    return nextLevel;
+                }
+                
+                // 如果没有已完成的关卡，则从第一关开始
+                showDebug('没有进度，从第一关开始');
+                return 1;
+            }
+            
+            const completedLevels = getCompletedLevels();
+            const currentLevel = getCurrentLevel();
+            
+            showDebug('已完成关卡: ' + JSON.stringify(completedLevels));
+            showDebug('当前关卡: ' + currentLevel);
+
+            // 获取关卡所属的难度
+            function getLevelDifficulty(levelId) {
+                for (const [difficulty, range] of Object.entries(difficultyRanges)) {
+                    if (levelId >= range.start && levelId <= range.end) {
+                        return difficulty;
+                    }
+                }
+                return 'easy';
+            }
+
+            // 检查关卡是否已完成
+            function isLevelCompleted(levelId) {
+                return completedLevels.includes(levelId);
+            }
+
+            // 检查关卡是否已解锁
+            function isLevelUnlocked(levelId) {
+                // 第一关默认解锁
+                if (levelId === 1) return true;
+                
+                // 如果关卡已完成，则已解锁
+                if (isLevelCompleted(levelId)) return true;
+                
+                // 如果是当前关卡，则已解锁
+                if (levelId === currentLevel) return true;
+                
+                // 如果前一关已完成，则当前关卡解锁
+                return isLevelCompleted(levelId - 1);
+            }
+
+            // 获取关卡状态
+            function getLevelStatus(levelId) {
+                if (isLevelCompleted(levelId)) {
+                    return 'completed';
+                } else if (levelId === currentLevel) {
+                    return 'current';
+                } else if (isLevelUnlocked(levelId)) {
+                    return 'unlocked';
+                } else {
+                    return 'locked';
+                }
+            }
+
+            // 更新关卡显示
+            function updateLevels(difficulty) {
+                showDebug('更新关卡显示: ' + difficulty);
+                
+                // 获取难度范围
+                const range = difficultyRanges[difficulty];
+                const total = range.end - range.start + 1;
+                
+                // 计算已完成的关卡数
+                let completed = 0;
+                for (let levelId = range.start; levelId <= range.end; levelId++) {
+                    if (isLevelCompleted(levelId)) {
+                        completed++;
+                    }
+                }
+                
+                // 调试输出
+                showDebug('难度: ' + difficulty);
+                showDebug('难度范围: ' + range.start + '-' + range.end);
+                showDebug('完成数量: ' + completed + '/' + total);
+                
+                // 更新进度显示
+                progressText.textContent = `${completed}/${total}`;
+                progressBar.style.width = `${(completed / total) * 100}%`;
+                
+                // 更新难度文本
+                difficultyText.textContent = difficultyNames[difficulty];
+
+                // 清空并重新生成关卡格子
+                levelsContainer.innerHTML = '';
+                
+                // 生成关卡格子
+                for (let levelId = range.start; levelId <= range.end; levelId++) {
+                    const status = getLevelStatus(levelId);
+                    showDebug(`关卡 ${levelId} 状态: ${status}`);
+                    
+                    const levelDiv = document.createElement('div');
+                    levelDiv.className = `level-item level-${status} level-animation`;
+                    
+                    // 设置动画延迟，创造波浪效果
+                    const index = levelId - range.start;
+                    levelDiv.style.animationDelay = `${index * 0.03}s`;
+                    
+                    // 显示实际关卡序号
+                    const displayNumber = levelId;
+                    
+                    if (status === 'completed') {
+                        levelDiv.innerHTML = `
+                            ${displayNumber}
+                            <div class="level-check">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        `;
+                    } else if (status === 'current') {
+                        levelDiv.innerHTML = `
+                            <span class="relative">
+                                ${displayNumber}
+                                <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </span>
+                        `;
+                    } else if (status === 'unlocked') {
+                        levelDiv.textContent = displayNumber;
+                    } else {
+                        // 为关卡添加提示
+                        let tooltipText = '请先完成前面的关卡';
+                        
+                        levelDiv.innerHTML = `
+                            <i class="fas fa-lock text-gray-400 mr-1"></i> ${displayNumber}
+                            <div class="tooltip">${tooltipText}</div>
+                        `;
+                    }
+                    
+                    // 添加点击事件
+                    if (status === 'completed' || status === 'current' || status === 'unlocked') {
+                        levelDiv.addEventListener('click', () => {
+                            // 添加点击效果
+                            levelDiv.classList.add('scale-95');
+                            setTimeout(() => {
+                                window.location.href = `game.html?level=${levelId}`;
+                            }, 200);
+                        });
+                    } else {
+                        levelDiv.addEventListener('click', () => {
+                            // 添加提示效果
+                            levelDiv.classList.add('shake');
+                            setTimeout(() => {
+                                levelDiv.classList.remove('shake');
+                                alert('请先完成前面的关卡！');
+                            }, 500);
+                        });
+                    }
+                    
+                    levelsContainer.appendChild(levelDiv);
+                }
+            }
+
+            // 添加难度切换事件
+            difficultyTabs.addEventListener('click', (e) => {
+                const tab = e.target.closest('.difficulty-tab');
+                if (!tab) return;
+                
+                // 更新选中状态
+                document.querySelectorAll('.difficulty-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
                 
                 // 更新关卡显示
-                updateLevelDisplay(currentLevel);
-                
-                // 难度选择标签点击事件
-                const difficultyTabs = document.querySelectorAll('.difficulty-tab');
-                difficultyTabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        // 移除所有标签的active类
-                        difficultyTabs.forEach(t => t.classList.remove('active'));
-                        // 添加当前标签的active类
-                        this.classList.add('active');
-                        
-                        // 获取选择的难度
-                        const difficulty = this.textContent.trim();
-                        showDebugInfo('选择难度: ' + difficulty);
-                        
-                        // 更新难度显示
-                        const difficultyText = document.querySelector('.text-sm.font-medium');
-                        if (difficultyText) {
-                            difficultyText.textContent = difficulty + '难度';
-                        }
-                        
-                        // 根据难度更新关卡显示
-                        filterLevelsByDifficulty(difficulty, currentLevel);
-                    });
-                });
-                
-                // 返回按钮点击事件
-                const backButton = document.querySelector('.nav-bar button');
-                if (backButton) {
-                    backButton.addEventListener('click', function() {
-                        window.location.href = 'home.html';
-                    });
-                }
-                
-                // 底部标签栏点击事件
-                const tabItems = document.querySelectorAll('.tab-item');
-                if (tabItems.length > 0) {
-                    tabItems[0].addEventListener('click', function() {
-                        window.location.href = 'home.html';
-                    });
-                }
-                if (tabItems.length > 3) {
-                    tabItems[3].addEventListener('click', function() {
-                        window.location.href = 'profile.html';
-                    });
-                }
-                
-            } catch (error) {
-                showDebugInfo('初始化关卡页面错误: ' + error.message);
-            }
+                updateLevels(tab.dataset.difficulty);
+            });
+
+            // 初始显示当前关卡所在的难度
+            const currentDifficulty = getLevelDifficulty(currentLevel);
+            document.querySelector(`.difficulty-tab[data-difficulty="${currentDifficulty}"]`).classList.add('active');
+            updateLevels(currentDifficulty);
+            
+            // 错误处理
+            window.onerror = function(message, source, lineno, colno, error) {
+                showDebug(`错误: ${message} (${source}:${lineno}:${colno})`);
+                return true;
+            };
         });
-        
-        // 更新关卡显示
-        function updateLevelDisplay(currentLevel) {
-            try {
-                // 获取成语数据
-                const idiomsData = window.idioms || [];
-                if (idiomsData.length === 0) {
-                    showDebugInfo('警告: 未找到成语数据');
-                    return;
-                }
-                
-                // 按ID排序
-                const sortedIdioms = [...idiomsData].sort((a, b) => a.id - b.id);
-                
-                // 获取关卡网格
-                const levelGrid = document.querySelector('.level-grid');
-                if (!levelGrid) {
-                    showDebugInfo('警告: 未找到关卡网格');
-                    return;
-                }
-                
-                // 清空网格
-                levelGrid.innerHTML = '';
-                
-                // 获取游戏数据，检查已完成的关卡
-                const gameData = JSON.parse(localStorage.getItem('emojiIdiomGame') || '{}');
-                const completedLevels = gameData.completedLevels || [];
-                
-                // 创建关卡元素
-                sortedIdioms.forEach(idiom => {
-                    const levelItem = document.createElement('div');
-                    levelItem.className = 'level-item';
-                    
-                    if (idiom.id < currentLevel) {  // 如果关卡ID小于当前关卡ID，说明已完成
-                        // 已完成关卡
-                        levelItem.classList.add('level-completed');
-                        levelItem.textContent = idiom.id;
-                        
-                        // 添加勾选图标
-                        const checkElement = document.createElement('div');
-                        checkElement.className = 'level-check';
-                        checkElement.innerHTML = '<i class="fas fa-check"></i>';
-                        levelItem.appendChild(checkElement);
-                        
-                        // 添加点击事件 - 可以重玩
-                        levelItem.style.cursor = 'pointer';
-                        levelItem.addEventListener('click', function() {
-                            localStorage.setItem('selectedLevel', idiom.id);
-                            window.location.href = 'game.html';
-                        });
-                    } else if (idiom.id === currentLevel) {
-                        // 当前关卡
-                        levelItem.classList.add('level-current');
-                        levelItem.textContent = idiom.id;
-                        levelItem.style.cursor = 'pointer';
-                        levelItem.addEventListener('click', function() {
-                            localStorage.setItem('selectedLevel', idiom.id);
-                            window.location.href = 'game.html';
-                        });
-                    } else {
-                        // 未完成关卡
-                        levelItem.classList.add('level-locked');
-                        levelItem.innerHTML = `<i class="fas fa-lock text-gray-400 mr-1"></i> ${idiom.id}`;
-                        levelItem.addEventListener('click', function() {
-                            alert('需要按顺序完成关卡！');
-                        });
-                    }
-                    
-                    levelGrid.appendChild(levelItem);
-                });
-                
-                // 更新进度显示
-                const completedCount = completedLevels.length;
-                const totalCount = sortedIdioms.length;
-                
-                const progressText = document.querySelector('.text-sm.text-gray-500');
-                if (progressText) {
-                    progressText.textContent = `${completedCount}/${totalCount}`;
-                }
-                
-                const progressFill = document.querySelector('.progress-fill');
-                if (progressFill) {
-                    const percentage = (completedCount / totalCount) * 100;
-                    progressFill.style.width = `${percentage}%`;
-                }
-                
-                showDebugInfo('关卡显示已更新');
-            } catch (error) {
-                showDebugInfo('更新关卡显示错误: ' + error.message);
-            }
-        }
-        
-        // 根据难度过滤关卡
-        function filterLevelsByDifficulty(difficulty, currentLevel) {
-            try {
-                // 获取成语数据
-                const idiomsData = window.idioms || [];
-                if (idiomsData.length === 0) {
-                    showDebugInfo('警告: 未找到成语数据');
-                    return;
-                }
-                
-                // 按ID排序
-                const sortedIdioms = [...idiomsData].sort((a, b) => a.id - b.id);
-                
-                // 根据难度过滤
-                let filteredIdioms = sortedIdioms;
-                if (difficulty !== '全部') {
-                    // 将界面难度转换为数据中的难度值
-                    let difficultyValue;
-                    if (difficulty === '初级') {
-                        difficultyValue = '初级难度';
-                    } else if (difficulty === '中级') {
-                        difficultyValue = '中级难度';
-                    } else if (difficulty === '高级') {
-                        difficultyValue = '高级难度';
-                    }
-                    
-                    // 使用转换后的难度值进行过滤
-                    if (difficultyValue) {
-                        filteredIdioms = sortedIdioms.filter(idiom => 
-                            idiom.difficulty === difficultyValue || 
-                            idiom.difficulty === difficulty
-                        );
-                        
-                        // 如果过滤后没有数据，显示调试信息
-                        if (filteredIdioms.length === 0) {
-                            showDebugInfo(`警告: ${difficulty}难度没有找到匹配的成语数据`);
-                            showDebugInfo(`可用的难度值: ${[...new Set(sortedIdioms.map(i => i.difficulty))].join(', ')}`);
-                        }
-                    }
-                }
-                
-                // 获取关卡网格
-                const levelGrid = document.querySelector('.level-grid');
-                if (!levelGrid) {
-                    showDebugInfo('警告: 未找到关卡网格');
-                    return;
-                }
-                
-                // 清空网格
-                levelGrid.innerHTML = '';
-                
-                // 创建关卡元素
-                filteredIdioms.forEach(idiom => {
-                    const levelItem = document.createElement('div');
-                    levelItem.className = 'level-item';
-                    
-                    if (idiom.id < currentLevel) {
-                        // 已完成关卡
-                        levelItem.classList.add('level-completed');
-                        levelItem.textContent = idiom.id;
-                        
-                        // 添加勾选图标
-                        const checkElement = document.createElement('div');
-                        checkElement.className = 'level-check';
-                        checkElement.innerHTML = '<i class="fas fa-check"></i>';
-                        levelItem.appendChild(checkElement);
-                        
-                        // 添加点击事件
-                        levelItem.style.cursor = 'pointer';
-                        levelItem.addEventListener('click', function() {
-                            localStorage.setItem('selectedLevel', idiom.id);
-                            showDebugInfo('选择关卡: ' + idiom.id);
-                            window.location.href = 'game.html';
-                        });
-                    } else if (idiom.id === currentLevel) {
-                        // 当前关卡
-                        levelItem.classList.add('level-current');
-                        levelItem.textContent = idiom.id;
-                        levelItem.style.cursor = 'pointer';
-                        levelItem.addEventListener('click', function() {
-                            localStorage.setItem('selectedLevel', idiom.id);
-                            showDebugInfo('选择关卡: ' + idiom.id);
-                            window.location.href = 'game.html';
-                        });
-                    } else {
-                        // 锁定关卡
-                        levelItem.classList.add('level-locked');
-                        levelItem.innerHTML = `<i class="fas fa-lock text-gray-400 mr-1"></i> ${idiom.id}`;
-                        levelItem.addEventListener('click', function() {
-                            alert('此关卡尚未解锁，请先完成前面的关卡！');
-                        });
-                    }
-                    
-                    levelGrid.appendChild(levelItem);
-                });
-                
-                // 更新进度显示
-                const completedCount = filteredIdioms.filter(idiom => idiom.id < currentLevel).length;
-                const totalCount = filteredIdioms.length;
-                
-                const progressText = document.querySelector('.text-sm.text-gray-500');
-                if (progressText) {
-                    progressText.textContent = `${completedCount}/${totalCount}`;
-                }
-                
-                const progressFill = document.querySelector('.progress-fill');
-                if (progressFill) {
-                    const percentage = (completedCount / totalCount) * 100;
-                    progressFill.style.width = `${percentage}%`;
-                }
-                
-                // 更新难度显示
-                const difficultyText = document.querySelector('.text-sm.font-medium');
-                if (difficultyText) {
-                    difficultyText.textContent = difficulty + '难度';
-                }
-                
-                showDebugInfo('关卡已按难度过滤: ' + difficulty);
-            } catch (error) {
-                showDebugInfo('过滤关卡错误: ' + error.message);
-            }
-        }
     </script>
 </body>
 </html> 

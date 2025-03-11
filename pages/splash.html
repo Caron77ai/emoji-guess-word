@@ -6,14 +6,16 @@
     <title>启动页 - Emoji猜成语</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/phone-frame.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #FF9D6C 0%, #FF5E62 100%);
-            height: 100vh;
             margin: 0;
             padding: 0;
             overflow: hidden;
+        }
+        .phone-content {
+            background: linear-gradient(135deg, #FF9D6C 0%, #FF5E62 100%);
         }
         .status-bar {
             height: 44px;
@@ -68,30 +70,34 @@
     </style>
 </head>
 <body>
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div>9:41</div>
-        <div class="flex space-x-2">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-full"></i>
-        </div>
-    </div>
-
-    <!-- 启动页内容 -->
-    <div class="flex flex-col items-center justify-center h-full splash-animation">
-        <div class="text-center">
-            <div class="game-controller">🎮</div>
-            <h1 class="text-4xl app-title mb-2">Emoji猜成语</h1>
-            <p class="text-white text-lg mb-8">用表情猜中国智慧</p>
-            
-            <div class="loading-dots mt-8">
-                <span></span>
-                <span></span>
-                <span></span>
+    <div class="phone-frame">
+        <div class="phone-content">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="flex space-x-2">
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-full"></i>
+                </div>
             </div>
-            
-            <p class="text-white text-sm mt-16 opacity-70">版本 1.0.0</p>
+
+            <!-- 启动页内容 -->
+            <div class="flex flex-col items-center justify-center h-full splash-animation">
+                <div class="text-center">
+                    <div class="game-controller">🎮</div>
+                    <h1 class="text-4xl app-title mb-2">Emoji猜成语</h1>
+                    <p class="text-white text-lg mb-8">用表情猜中国智慧</p>
+                    
+                    <div class="loading-dots mt-8">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    
+                    <p class="text-white text-sm mt-16 opacity-70">版本 1.0.0</p>
+                </div>
+            </div>
         </div>
     </div>
 

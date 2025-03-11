@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人中心 - Emoji猜成语</title>
+    <title>Emoji猜成语 - 个人中心</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/phone-frame.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -26,16 +28,18 @@
             font-size: 14px;
         }
         .tab-bar {
-            height: 83px;
-            background-color: rgba(255, 255, 255, 0.9);
+            height: 60px;
+            background-color: white;
             border-top: 1px solid #E5E5EA;
-            position: fixed;
+            position: absolute;
             bottom: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
+            width: auto;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: 20px;
+            z-index: 10;
         }
         .tab-item {
             display: flex;
@@ -109,178 +113,182 @@
     </style>
 </head>
 <body>
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <div>9:41</div>
-        <div class="flex space-x-2">
-            <i class="fas fa-signal"></i>
-            <i class="fas fa-wifi"></i>
-            <i class="fas fa-battery-full"></i>
-        </div>
-    </div>
+    <div class="phone-frame">
+        <div class="phone-content">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="flex space-x-2">
+                    <i class="fas fa-signal"></i>
+                    <i class="fas fa-wifi"></i>
+                    <i class="fas fa-battery-full"></i>
+                </div>
+            </div>
 
-    <!-- 个人中心内容 -->
-    <div class="pb-24 overflow-auto h-full">
-        <!-- 个人信息头部 -->
-        <div class="profile-header">
-            <div class="flex items-center">
-                <div class="avatar mr-4">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold mb-1">小明同学</h1>
-                    <p class="text-white text-opacity-90 text-sm mb-2">ID: 12345678</p>
-                    <div class="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm inline-block">
-                        Lv.15 成语达人
+            <!-- 个人中心内容 -->
+            <div class="p-0 pb-20 overflow-auto h-full">
+                <!-- 个人信息头部 -->
+                <div class="profile-header">
+                    <div class="flex items-center">
+                        <div class="avatar mr-4">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold mb-1">小明同学</h1>
+                            <p class="text-white text-opacity-90 text-sm mb-2">ID: 12345678</p>
+                            <div class="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm inline-block">
+                                Lv.15 成语达人
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="flex mt-6 justify-between">
-                <div class="text-center">
-                    <div class="text-2xl font-bold">256</div>
-                    <div class="text-white text-opacity-80 text-sm">已解锁</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-2xl font-bold">98%</div>
-                    <div class="text-white text-opacity-80 text-sm">正确率</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-2xl font-bold">2,580</div>
-                    <div class="text-white text-opacity-80 text-sm">金币</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 统计数据 -->
-        <div class="p-4">
-            <h2 class="text-lg font-semibold mb-3">游戏统计</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="stat-card">
-                    <div class="text-gray-500 text-sm mb-1">连续登录</div>
-                    <div class="flex items-end">
-                        <span class="text-2xl font-bold mr-2">12</span>
-                        <span class="text-gray-500 text-sm">天</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="text-gray-500 text-sm mb-1">最佳用时</div>
-                    <div class="flex items-end">
-                        <span class="text-2xl font-bold mr-2">8.5</span>
-                        <span class="text-gray-500 text-sm">秒</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="text-gray-500 text-sm mb-1">总游戏时长</div>
-                    <div class="flex items-end">
-                        <span class="text-2xl font-bold mr-2">26.5</span>
-                        <span class="text-gray-500 text-sm">小时</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="text-gray-500 text-sm mb-1">排名</div>
-                    <div class="flex items-end">
-                        <span class="text-2xl font-bold mr-2">1,256</span>
-                        <span class="text-gray-500 text-sm">全国</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 成就 -->
-            <h2 class="text-lg font-semibold mb-3">我的成就</h2>
-            <div class="space-y-3 mb-6">
-                <div class="achievement-item">
-                    <div class="achievement-icon bg-yellow-500">
-                        🏆
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-medium mb-1">成语大师</div>
-                        <div class="text-gray-500 text-sm">连续答对100个成语</div>
-                    </div>
-                    <div class="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs">
-                        已获得
+                    
+                    <div class="flex mt-6 justify-between">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">256</div>
+                            <div class="text-white text-opacity-80 text-sm">已解锁</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">98%</div>
+                            <div class="text-white text-opacity-80 text-sm">正确率</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">2,580</div>
+                            <div class="text-white text-opacity-80 text-sm">金币</div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="achievement-item">
-                    <div class="achievement-icon bg-purple-500">
-                        ⚡
+                <!-- 统计数据 -->
+                <div class="p-4">
+                    <h2 class="text-lg font-semibold mb-3">游戏统计</h2>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="stat-card">
+                            <div class="text-gray-500 text-sm mb-1">连续登录</div>
+                            <div class="flex items-end">
+                                <span class="text-2xl font-bold mr-2">12</span>
+                                <span class="text-gray-500 text-sm">天</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-gray-500 text-sm mb-1">最佳用时</div>
+                            <div class="flex items-end">
+                                <span class="text-2xl font-bold mr-2">8.5</span>
+                                <span class="text-gray-500 text-sm">秒</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-gray-500 text-sm mb-1">总游戏时长</div>
+                            <div class="flex items-end">
+                                <span class="text-2xl font-bold mr-2">26.5</span>
+                                <span class="text-gray-500 text-sm">小时</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-gray-500 text-sm mb-1">排名</div>
+                            <div class="flex items-end">
+                                <span class="text-2xl font-bold mr-2">1,256</span>
+                                <span class="text-gray-500 text-sm">全国</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <div class="font-medium mb-1">闪电思维</div>
-                        <div class="text-gray-500 text-sm">5秒内答对一道题</div>
+                    
+                    <!-- 成就 -->
+                    <h2 class="text-lg font-semibold mb-3">我的成就</h2>
+                    <div class="space-y-3 mb-6">
+                        <div class="achievement-item">
+                            <div class="achievement-icon bg-yellow-500">
+                                🏆
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-medium mb-1">成语大师</div>
+                                <div class="text-gray-500 text-sm">连续答对100个成语</div>
+                            </div>
+                            <div class="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs">
+                                已获得
+                            </div>
+                        </div>
+                        
+                        <div class="achievement-item">
+                            <div class="achievement-icon bg-purple-500">
+                                ⚡
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-medium mb-1">闪电思维</div>
+                                <div class="text-gray-500 text-sm">5秒内答对一道题</div>
+                            </div>
+                            <div class="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs">
+                                已获得
+                            </div>
+                        </div>
+                        
+                        <div class="achievement-item">
+                            <div class="achievement-icon bg-gray-300">
+                                🔥
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-medium mb-1">坚持不懈</div>
+                                <div class="text-gray-500 text-sm">连续登录30天</div>
+                            </div>
+                            <div class="bg-gray-100 text-gray-500 rounded-full px-2 py-1 text-xs">
+                                进度 12/30
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-green-100 text-green-800 rounded-full px-2 py-1 text-xs">
-                        已获得
-                    </div>
-                </div>
-                
-                <div class="achievement-item">
-                    <div class="achievement-icon bg-gray-300">
-                        🔥
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-medium mb-1">坚持不懈</div>
-                        <div class="text-gray-500 text-sm">连续登录30天</div>
-                    </div>
-                    <div class="bg-gray-100 text-gray-500 rounded-full px-2 py-1 text-xs">
-                        进度 12/30
+                    
+                    <!-- 菜单 -->
+                    <h2 class="text-lg font-semibold mb-3">设置与帮助</h2>
+                    <div class="bg-white rounded-lg overflow-hidden mb-6">
+                        <div class="menu-item">
+                            <div class="menu-icon bg-blue-500">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <div class="flex-1">编辑资料</div>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon bg-green-500">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="flex-1">通知设置</div>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon bg-purple-500">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="flex-1">帮助中心</div>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </div>
+                        <div class="menu-item" onclick="window.location.href='settings.html'">
+                            <div class="menu-icon bg-red-500">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="flex-1">系统设置</div>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- 菜单 -->
-            <h2 class="text-lg font-semibold mb-3">设置与帮助</h2>
-            <div class="bg-white rounded-lg overflow-hidden mb-6">
-                <div class="menu-item">
-                    <div class="menu-icon bg-blue-500">
-                        <i class="fas fa-user-edit"></i>
-                    </div>
-                    <div class="flex-1">编辑资料</div>
-                    <i class="fas fa-chevron-right text-gray-300"></i>
-                </div>
-                <div class="menu-item">
-                    <div class="menu-icon bg-green-500">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="flex-1">通知设置</div>
-                    <i class="fas fa-chevron-right text-gray-300"></i>
-                </div>
-                <div class="menu-item">
-                    <div class="menu-icon bg-purple-500">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <div class="flex-1">帮助中心</div>
-                    <i class="fas fa-chevron-right text-gray-300"></i>
-                </div>
-                <div class="menu-item">
-                    <div class="menu-icon bg-red-500">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <div class="flex-1">系统设置</div>
-                    <i class="fas fa-chevron-right text-gray-300"></i>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 底部标签栏 -->
-    <div class="tab-bar">
-        <div class="tab-item" onclick="window.location.href='home.html'">
-            <i class="fas fa-home"></i>
-            <span>首页</span>
-        </div>
-        <div class="tab-item" onclick="window.location.href='levels.html'">
-            <i class="fas fa-gamepad"></i>
-            <span>游戏</span>
-        </div>
-        <div class="tab-item" onclick="window.location.href='ranking.html'">
-            <i class="fas fa-trophy"></i>
-            <span>排行</span>
-        </div>
-        <div class="tab-item active">
-            <i class="fas fa-user"></i>
-            <span>我的</span>
+            <!-- 底部标签栏 -->
+            <div class="tab-bar">
+                <div class="tab-item" onclick="window.location.href='home.html'">
+                    <span class="emoji-icon">🏠</span>
+                    <span>首页</span>
+                </div>
+                <div class="tab-item" onclick="window.location.href='levels.html'">
+                    <span class="emoji-icon">🎮</span>
+                    <span>关卡</span>
+                </div>
+                <div class="tab-item">
+                    <span class="emoji-icon">🏅</span>
+                    <span>排行榜</span>
+                </div>
+                <div class="tab-item">
+                    <span class="emoji-icon">👤</span>
+                    <span>我</span>
+                </div>
+            </div>
         </div>
     </div>
 
