@@ -1,6 +1,6 @@
 # Emoji猜成语
 
-![Emoji猜成语](https://via.placeholder.com/800x400?text=Emoji猜成语)
+![Emoji猜成语](assets/images/Emoji-guess-word.png)
 
 ## 📝 项目简介
 
